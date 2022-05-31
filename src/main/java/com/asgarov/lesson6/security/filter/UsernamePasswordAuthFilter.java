@@ -3,6 +3,7 @@ package com.asgarov.lesson6.security.filter;
 import com.asgarov.lesson6.entity.Otp;
 import com.asgarov.lesson6.security.authentication.OtpAuthentication;
 import com.asgarov.lesson6.security.authentication.UsernamePasswordAuthentication;
+import com.asgarov.lesson6.security.manager.TokenManager;
 import com.asgarov.lesson6.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class UsernamePasswordAuthFilter extends OncePerRequestFilter {
 
     private final AuthenticationService authenticationService;
+    private final TokenManager tokenManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -35,13 +37,13 @@ public class UsernamePasswordAuthFilter extends OncePerRequestFilter {
             Otp otpEntity = new Otp();
             otpEntity.setUsername(username);
             otpEntity.setOtp(UUID.randomUUID().toString());
-            authenticationService. saveOtp(otpEntity);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            authenticationService.saveOtp(otpEntity);
         } else {
             var authentication = new OtpAuthentication(username, otp);
             authenticationService.authenticate(authentication);
-            response.setHeader("Authorization", UUID.randomUUID().toString());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String token = UUID.randomUUID().toString();
+            tokenManager.add(token);
+            response.setHeader("Authorization", token);
         }
     }
 
