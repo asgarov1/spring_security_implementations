@@ -17,7 +17,7 @@ sequenceDiagram
     database->>server: returns entity if found
     server->>server: if OTP found, generates a new authorization token, saves it in memory
     server->>client: returns response with generated token as "Authorization" header
-    client->>server: send GET request to a `/hello` resource with received token in "Authorization" header
+    client->>server: send GET request to a /hello resource with received token in "Authorization" header
     server->>client: return the resource (in this case "Hello!")
 ```
 
